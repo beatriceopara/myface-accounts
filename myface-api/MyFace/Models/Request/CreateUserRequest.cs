@@ -23,5 +23,12 @@ namespace MyFace.Models.Request
         public string ProfileImageUrl { get; set; }
         
         public string CoverImageUrl { get; set; }
+        
+        [Required]
+        [MinLength(8)]
+        //pwd required to be min length of 8 char 
+        //will research how to include uppercase
+        public string Password { get; set; }
+        
     }
 }
