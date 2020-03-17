@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MyFace.Auth;
 using MyFace.Models.Database;
 
 namespace MyFace.Data
@@ -116,9 +117,14 @@ namespace MyFace.Data
         {
             return Enumerable.Range(0, NumberOfUsers).Select(CreateRandomUser);
         }
+        
+        
 
         private static User CreateRandomUser(int index)
         {
+            var salt = HashAndSaltGenerator.GetSalt();
+            const string password = "my-super-secret-password";
+            
             return new User
             {
                 FirstName = _data[index][0],
@@ -127,8 +133,8 @@ namespace MyFace.Data
                 Email = _data[index][3],
                 ProfileImageUrl = ImageGenerator.GetProfileImage(_data[index][2]),
                 CoverImageUrl = ImageGenerator.GetCoverImage(index),
-                HashedPassword = "sugar",
-                Salt = "1234abcd"
+                HashedPassword = HashAndSaltGenerator.HashPassword(salt, password),
+                Salt = salt
             };
         }
     }
