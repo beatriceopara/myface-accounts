@@ -36,6 +36,11 @@ namespace MyFace.Controllers
             [HttpPost("create")]
             public IActionResult Create([FromBody] CreateInteractionRequest newUser)
             {
+                // grab auth header from request Request.Headers.get
+                // parse / decode header to get username and password
+                // check username and password valid
+                // if not then return Forbidden();
+                Request.Headers["Authorization"]
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
