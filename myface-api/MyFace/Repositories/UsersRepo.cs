@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using MyFace.Services;
 using MyFace.Models.Database;
 using MyFace.Models.Request;
 
@@ -19,10 +20,12 @@ namespace MyFace.Repositories
     public class UsersRepo : IUsersRepo
     {
         private readonly MyFaceDbContext _context;
+        private readonly IHashService _hashService;
 
-        public UsersRepo(MyFaceDbContext context)
+        public UsersRepo(MyFaceDbContext context, IHashService hashService)
         {
             _context = context;
+            _hashService = hashService;
         }
         
         public IEnumerable<User> Search(SearchRequest search)
@@ -60,6 +63,9 @@ namespace MyFace.Repositories
 
         public User Create(CreateUserRequest newUser)
         {
+            var salt = _hashService.GetSalt();
+            const string password = "my-super-secret-password";
+            
             var insertResponse = _context.Users.Add(new User
             {
                 FirstName = newUser.FirstName,
@@ -68,6 +74,8 @@ namespace MyFace.Repositories
                 Username = newUser.Username,
                 ProfileImageUrl = newUser.ProfileImageUrl,
                 CoverImageUrl = newUser.CoverImageUrl,
+                HashedPassword = _hashService.HashPassword(salt, password),
+                Salt = salt
             });
             _context.SaveChanges();
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyFace.Services;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
@@ -9,6 +10,7 @@ namespace MyFace.Controllers
     public class FeedController
     {
         private readonly IPostsRepo _posts;
+       
 
         public FeedController(IPostsRepo posts)
         {

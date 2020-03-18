@@ -71,7 +71,16 @@ namespace MyFace.Controllers
                     var username = usernamePassword.Substring(0, separatorIndex);
                     var password = usernamePassword.Substring(separatorIndex + 1);
 
-                    UsersRepo.Count(username);
+                    // UsersRepo.Count(username);
+                    //
+                    // //if username found in database
+                    // //hash password and compare to what is in DB
+                    // //if same
+                    // if ()
+                    // {
+                    //     
+                    // }
+
                 }
                 else
                 {

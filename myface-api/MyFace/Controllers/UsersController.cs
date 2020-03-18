@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyFace.Auth;
+using MyFace.Services;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
