@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Data.Entity;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MyFace.Models.Request;
 using MyFace.Models.Response;
 using MyFace.Repositories;
@@ -36,11 +40,7 @@ namespace MyFace.Controllers
             [HttpPost("create")]
             public IActionResult Create([FromBody] CreateInteractionRequest newUser)
             {
-                // grab auth header from request Request.Headers.get
-                // parse / decode header to get username and password
-                // check username and password valid
-                // if not then return Forbidden();
-                Request.Headers["Authorization"]
+                
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
@@ -50,7 +50,35 @@ namespace MyFace.Controllers
 
                 var url = Url.Action("GetById", new { id = interaction.Id });
                 var responseViewModel = new InteractionResponse(interaction);
+                
+                CheckAuthHeader();
                 return Created(url, responseViewModel);
+            }
+            //create checkAuthHeader() -- can move into new class if want to reuse 
+
+            public string CheckAuthHeader()
+            {
+                string authHeader = Request.Headers["Authorization"];
+
+                if (authHeader != null && authHeader.StartsWith("Basic"))
+                {
+                    string encodedUsernamePassword = authHeader.Substring("Basic".Length).Trim();
+                    Encoding encoding = Encoding.GetEncoding("iso-8859-1");
+                    string usernamePassword = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
+
+                    int separatorIndex = usernamePassword.IndexOf(':');
+
+                    var username = usernamePassword.Substring(0, separatorIndex);
+                    var password = usernamePassword.Substring(separatorIndex + 1);
+
+                    UsersRepo.Count(username);
+                }
+                else
+                {
+                    throw new Exception("The authorization header is either empty or isn't Basic.");
+                }
+
+                return authHeader;
             }
 
             [HttpDelete("{id}")]

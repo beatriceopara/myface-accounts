@@ -33,8 +33,6 @@ namespace MyFace.Controllers
         }
         
         
-        
-
         [HttpPost("create")]
         public IActionResult Create([FromBody] CreateUserRequest newUser)
         {
@@ -49,6 +47,7 @@ namespace MyFace.Controllers
             var responseViewModel = new UserResponse(user);
             return Created(url, responseViewModel);
         }
+        
 
         [HttpPatch("{id}/update")]
         public ActionResult<UserResponse> Update([FromRoute] int id, [FromBody] UpdateUserRequest update)
