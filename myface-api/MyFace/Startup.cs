@@ -49,6 +49,8 @@ namespace MyFace
             services.AddTransient<IUsersRepo, UsersRepo>();
             services.AddTransient<IHashService, HashService>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IInteractionsRepo, InteractionsRepo>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
