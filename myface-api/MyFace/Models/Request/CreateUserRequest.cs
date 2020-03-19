@@ -20,15 +20,16 @@ namespace MyFace.Models.Request
         [StringLength(70)]
         public string Username { get; set; }
         
+        [Required]
+        [MinLength(8)]
+        //pwd required to be min length of 8 char 
+        public string Password { get; set; }
+        
         public string ProfileImageUrl { get; set; }
         
         public string CoverImageUrl { get; set; }
         
-        [Required]
-        [MinLength(8)]
-        //pwd required to be min length of 8 char 
-        //will research how to include uppercase
-        public string Password { get; set; }
+       
         
     }
 }
