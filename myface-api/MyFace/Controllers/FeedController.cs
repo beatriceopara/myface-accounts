@@ -18,16 +18,16 @@ namespace MyFace.Controllers
             _authService = authService;
         }
         
-        // [HttpGet("")]
-        // public ActionResult<FeedModel> GetFeed([FromQuery] SearchRequest searchRequest)
-        // {
-        //     if (!_authService.HasValidAuthorization(Request))
-        //     {
-        //         return UnauthorizedResult();
-        //     }
-        //     var posts = _posts.SearchFeed(searchRequest);
-        //     var postCount = _posts.Count(searchRequest);
-        //     return FeedModel.Create(searchRequest, posts, postCount);
-        // }
+        [HttpGet("")]
+        public ActionResult<FeedModel> GetFeed([FromQuery] SearchRequest searchRequest)
+        {
+            // if (!_authService.HasValidAuthorization(Request))
+            // {
+            //     return UnauthorizedResult();
+            // }
+            var posts = _posts.SearchFeed(searchRequest);
+            var postCount = _posts.Count(searchRequest);
+            return FeedModel.Create(searchRequest, posts, postCount);
+        }
     }
 }

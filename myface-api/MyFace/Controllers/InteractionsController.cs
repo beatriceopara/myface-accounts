@@ -58,64 +58,71 @@ namespace MyFace.Controllers
             var url = Url.Action("GetById", new { id = interaction.Id });
             var responseViewModel = new InteractionResponse(interaction);
             
-            CheckAuthHeader();
-            return Created(url, responseViewModel);
-        }
-        //create checkAuthHeader() -- can move into new class if want to reuse 
+            var authHeaderIsValid = CheckAuthHeader();
 
-        public string CheckAuthHeader()
-        {
-            // Base64Encode("mikewalker:secret-password")
-            // Content-Type => "application/json"
-            // Authorization => "Basic aolhtowyosihfsoi=="
-            string authHeader = Request.Headers["Authorization"];
-
-            if (authHeader != null && authHeader.StartsWith("Basic"))
+            if (authHeaderIsValid)
             {
-                string encodedUsernamePassword = authHeader.Substring("Basic".Length).Trim();
-                
-                Encoding encoding = Encoding.GetEncoding("iso-8859-1");
-                string usernamePassword = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
-
-                int separatorIndex = usernamePassword.IndexOf(':');
-
-                var username = usernamePassword.Substring(0, separatorIndex);
-                var password = usernamePassword.Substring(separatorIndex + 1);
-
-                User user = _users.GetByUsername(username);
-
-                var originalPassword = user.HashedPassword;
-
-                var salt = _hashService.GetSalt();
-                
-                var attemptedPassword = _hashService.HashPassword(salt, password);
-                
-                //password = salt, hashpassword (not same)
-                //hash password and compare what is in the Database
-                if (attemptedPassword != originalPassword)
-                {
-                    // return Unauthorized().ToString();
-                    return user.Username;
-                    // return Ok();
-                    //continue request
-                }
-             
+                return Created(url, responseViewModel);
             }
             else
             {
-                throw new Exception(Unauthorized(401).ToString());
-                // throw new Exception("The authorization header is either empty or isn't Basic.");
-                // return Unauthorized().ToString();
+                return Unauthorized("User not logged in");
             }
-
-            return authHeader;
+            
         }
+
+        public bool CheckAuthHeader()
+        {
+            string authHeader = Request.Headers["Authorization"];
+
+            if (authHeader == null || !authHeader.StartsWith("Basic"))
+            {
+                return false;
+            }
+            
+            string encodedUsernamePassword = authHeader.Substring("Basic".Length).Trim();
+                
+            Encoding encoding = Encoding.GetEncoding("iso-8859-1");
+            string usernamePassword = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
+
+            int separatorIndex = usernamePassword.IndexOf(':');
+
+            var username = usernamePassword.Substring(0, separatorIndex);
+            var password = usernamePassword.Substring(separatorIndex + 1);
+
+            User user = _users.GetByUsername(username);
+
+            var originalPassword = user.HashedPassword;
+
+            var salt = _hashService.GetSalt();
+                
+            var attemptedPassword = _hashService.HashPassword(salt, password);
+
+            return IsUserLogged(attemptedPassword, originalPassword);
+
+            // throw new Exception(Unauthorized(401).ToString());
+            // throw new Exception("The authorization header is either empty or isn't Basic.");
+            // return Unauthorized().ToString();
+        }
+        
+        //
+        
 
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
         {
             _interactions.Delete(id);
             return Ok();
+        }
+
+        bool IsUserLogged(string attemptedPassword, string originalPassword)
+        {
+            if (attemptedPassword != originalPassword)
+            {
+                return false;
+            }
+                    
+            return true;
         }
     }
 }
