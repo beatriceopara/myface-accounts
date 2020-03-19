@@ -99,13 +99,7 @@ namespace MyFace.Controllers
             var attemptedPassword = _hashService.HashPassword(salt, password);
 
             return IsUserLogged(attemptedPassword, originalPassword);
-
-            // throw new Exception(Unauthorized(401).ToString());
-            // throw new Exception("The authorization header is either empty or isn't Basic.");
-            // return Unauthorized().ToString();
         }
-        
-        //
         
 
         [HttpDelete("{id}")]
